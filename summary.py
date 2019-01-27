@@ -1,6 +1,10 @@
 import pandas as pd
 import sys, os
 import argparse
+import re
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 def parse_args():
         parser = argparse.ArgumentParser()
@@ -25,17 +29,21 @@ class parseExcel(object):
             fsplit = fac.split('-')
             if len(fsplit)==3:
                 self.cfactu.append({str(fsplit[2]):float(amount)})
-        print self.cfactu
         for fac in self.bfile['Comentario'].to_string(index=False).split('\n'):
             self.bfactu.append(fac)
     
     def searchFactu(self):
         for f in self.bfactu:
-            for fc in self.cfactu:
-                if fc in f:
-                    print self.bfile.loc[self.bfile['Comentario'] == f]['Monto']
-                
-
+            numberb=re.findall(r"\b\d+\b",f)
+            for unit in numberb:
+                found=False
+                for fc in self.cfactu:
+                    if unit in fc.keys():
+                        print fc.keys()
+                        print "founded: {0}".format(self.bfile.loc[self.bfile['Comentario'] == f]['Monto'])
+                        found=True
+                if not found:
+                    print '{} - not founded'.format(unit)
 
 if __name__ == '__main__':
     ll=[]
