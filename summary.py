@@ -25,7 +25,6 @@ class parseExcel(object):
         self.cfactu=[]
         total=self.cfile.pivot_table(index=['Nro Factura'])
         totalbase=self.bfile.pivot_table(index=['Nro. de Deposito'])
-        print totalbase
 
         for fac in total.index:
             amount = total[(total.index.get_level_values('Nro Factura') == fac)]['Monto'].to_string(index=False).split('\n')[-1]
