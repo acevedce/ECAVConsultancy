@@ -3,6 +3,7 @@ import pandas as pd
 import sys, os
 import argparse
 import re
+import xlrd
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -46,6 +47,30 @@ class parseExcel(object):
             if not found:
                 print '{} - not founded'.format(f)
 
+    def open_file(self, path):
+        wb = xlrd.open_workbook(path)
+        sheet = wb.sheet_by_index(0)
+    
+        list=[]
+        for row_num in range(1, sheet.nrows):
+            row_value = sheet.row_values(row_num)
+            if row_value[9] != '' and row_value[0]!= '':
+       #         print row_value
+                list.append(row_value)
+        return list
+    
+    def files_diff(self, list0, list1):
+        for ii in list1:
+            flag=False
+            for i in list0:
+                if ii[1].split('-')[2] in i[-3]:
+                    i.insert(0,str(ii[1]))
+                    print "{} - found with key".format(i)
+    #                list.append(i)
+                    flag=True
+            if flag==False:
+                print "No results for factu num: {}".format(ii[1])
+
 if __name__ == '__main__':
     ll=[]
 
@@ -54,4 +79,7 @@ if __name__ == '__main__':
     pEx.loadExcel(opts.basefile, opts.crossfile)
     pEx.loadNroFactu()
     pEx.searchFactu()
-    
+    list0=pEx.open_file(opts.basefile)
+    list1=pEx.open_file(opts.crossfile)
+    print pEx.files_diff(list0, list1)
+        

@@ -1,4 +1,5 @@
 import xlrd
+import xlsxwriter
 
 def open_file(path):
     wb = xlrd.open_workbook(path)
@@ -22,7 +23,9 @@ if __name__ == "__main__":
         flag=False
         for i in list0:
             if ii[1].split('-')[2] in i[-3]:
-                print "{} - found with key {}".format(i, ii[1])
+                i.insert(0,str(ii[1]))
+                print "{} - found with key".format(i)
+#                list.append(i)
                 flag=True
         if flag==False:
-            print "NONE RESULT FOR: {}".format(ii[1])
+            print "No results for factu num: {}".format(ii[1])
