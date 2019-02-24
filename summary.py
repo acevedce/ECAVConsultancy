@@ -8,14 +8,15 @@ import xlrd
 reload(sys)
 sys.setdefaultencoding('utf8')
 
-def parse_args():
-        parser = argparse.ArgumentParser()
-        parser.add_argument("-b", "--basefile",required=True,help="root path to excel base file")
-        parser.add_argument("-c", "--crossfile",required=True,help="root path to excel cross file")
-        opts = parser.parse_args()
-        return opts
 
 class parseExcel(object):
+    def parse_args(self):
+            parser = argparse.ArgumentParser()
+            parser.add_argument("-b", "--basefile",required=True,help="root path to excel base file")
+            parser.add_argument("-c", "--crossfile",required=True,help="root path to excel cross file")
+            opts = parser.parse_args()
+            return opts
+
     def loadExcel(self, basefile, crossfile):
         self.bfile=pd.read_excel(basefile)
         self.cfile=pd.read_excel(crossfile)
@@ -60,26 +61,47 @@ class parseExcel(object):
         return list
     
     def files_diff(self, list0, list1):
+        results={}
+        noresults=[]
         for ii in list1:
             flag=False
             for i in list0:
                 if ii[1].split('-')[2] in i[-3]:
-                    i.insert(0,str(ii[1]))
-                    print "{} - found with key".format(i)
-    #                list.append(i)
+                    if "{}-{}".format(ii[1],i[-3]) not in results.keys():
+                        i.insert(0,True)
+                        i.insert(0,ii[-3])
+                        results["{}-{}".format(ii[1],i[-3])]=i
+                    elif results["{}-{}".format(ii[1],i[-3])][-1] != ii[-3]:
+                        i.insert(0,True)
+                        i.insert(0,ii[-3])
+                        results["{}-{}".format(ii[1],i[-3])]=i
                     flag=True
             if flag==False:
-                print "No results for factu num: {}".format(ii[1])
+                if "{}-{}".format(ii[1],i[-3]) not in results.keys():
+                    results["{}-{}".format(ii[1],i[-3])]=["none",ii[-3]]
+        for i in list0:
+            if i[1] != True and i[2]!='':
+                noresults.append(i)
+
+        return [results, noresults]
 
 if __name__ == '__main__':
     ll=[]
 
-    opts = parse_args()
     pEx = parseExcel()
-    pEx.loadExcel(opts.basefile, opts.crossfile)
-    pEx.loadNroFactu()
-    pEx.searchFactu()
+    opts = pEx.parse_args()
+
+    #pEx.loadExcel(opts.basefile, opts.crossfile)
+    #pEx.loadNroFactu()
+    #pEx.searchFactu()
     list0=pEx.open_file(opts.basefile)
     list1=pEx.open_file(opts.crossfile)
-    print pEx.files_diff(list0, list1)
-        
+    dictionary, nodict = pEx.files_diff(list0, list1)
+    for i in dictionary.keys():
+        if dictionary[i][0] != "none":
+            print "facturas: {} >> verificado :{} - reportado: {} = diferencia: {}".format(i,dictionary[i][-1], dictionary[i][0], float(dictionary[i][-1]) - float(dictionary[i][0]))
+        else:
+            print "factura no reportada: {}  con monto: {}".format(i,dictionary[i][1])
+    print "---------------------"
+    for i in nodict:
+        print "No tienen anotaciones de verificacion: {} - {}".format(i[-3],i[-1])
