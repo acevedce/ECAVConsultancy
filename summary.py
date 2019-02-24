@@ -99,9 +99,9 @@ if __name__ == '__main__':
     dictionary, nodict = pEx.files_diff(list0, list1)
     for i in dictionary.keys():
         if dictionary[i][0] != "none":
-            print "facturas: {} >> verificado :{} - reportado: {} = diferencia: {}".format(i,dictionary[i][-1], dictionary[i][0], float(dictionary[i][-1]) - float(dictionary[i][0]))
+            print "facturas: {} >> verificado :{} - reportado: {} = diferencia: {}".format(i, int(dictionary[i][-1]), int(dictionary[i][0]), int(dictionary[i][-1]) - int(dictionary[i][0]))
         else:
-            print "factura no reportada: {}  con monto: {}".format(i,dictionary[i][1])
+            print "factura no reportada: {}  con monto: {}".format(i, int(dictionary[i][1]))
     print "---------------------"
     for i in nodict:
-        print "No tienen anotaciones de verificacion: {} - {}".format(i[-3],i[-1])
+        print "No tienen anotaciones de verificacion: {} -  con monto: {}".format(i[-3], int(i[-1]))
