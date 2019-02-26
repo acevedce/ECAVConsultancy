@@ -15,6 +15,8 @@ class parseExcel(object):
             parser = argparse.ArgumentParser()
             parser.add_argument("-b", "--basefile",required=True,help="root path to excel base file")
             parser.add_argument("-c", "--crossfile",required=True,help="root path to excel cross file")
+            parser.add_argument("-o", "--outfile",required=True,help="root path to excel output file")
+
             opts = parser.parse_args()
             return opts
 
@@ -88,10 +90,7 @@ class parseExcel(object):
 
 if __name__ == '__main__':
     ll=[]
-    workbook = xlsxwriter.Workbook('Expenses01.xlsx')
-    verificados = workbook.add_worksheet('Verificados')
-    NoReportados = workbook.add_worksheet('NoReportados')
-    NoVerificados = workbook.add_worksheet('NoVerificados')
+
 
     pEx = parseExcel()
     opts = pEx.parse_args()
@@ -101,6 +100,11 @@ if __name__ == '__main__':
     #pEx.searchFactu()
     list0=pEx.open_file(opts.basefile)
     list1=pEx.open_file(opts.crossfile)
+    outfile = opts.outfile
+    workbook = xlsxwriter.Workbook(outfile)
+    verificados = workbook.add_worksheet('Verificados')
+    NoReportados = workbook.add_worksheet('NoReportados')
+    NoVerificados = workbook.add_worksheet('NoVerificados')
     dictionary, nodict = pEx.files_diff(list0, list1)
     for i in dictionary.keys():
         if dictionary[i][0] != "none":
