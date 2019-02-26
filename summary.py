@@ -4,6 +4,7 @@ import sys, os
 import argparse
 import re
 import xlrd
+import xlsxwriter
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -87,6 +88,10 @@ class parseExcel(object):
 
 if __name__ == '__main__':
     ll=[]
+    workbook = xlsxwriter.Workbook('Expenses01.xlsx')
+    verificados = workbook.add_worksheet('Verificados')
+    NoReportados = workbook.add_worksheet('NoReportados')
+    NoVerificados = workbook.add_worksheet('NoVerificados')
 
     pEx = parseExcel()
     opts = pEx.parse_args()
@@ -105,3 +110,40 @@ if __name__ == '__main__':
     print "---------------------"
     for i in nodict:
         print "No tienen anotaciones de verificacion: {} -  con monto: {}".format(i[-3], int(i[-1]))
+    
+    verificados.write('A1','Factura')
+    verificados.write('B1','Verificado')
+    verificados.write('C1','Reportado')
+    verificados.write('D1','Diferencia')
+    row = 1
+    for i in dictionary.keys():
+        if dictionary[i][0] != "none":
+            verificados.write(row, 0, i)
+            verificados.write(row, 1, int(dictionary[i][-1]))
+            verificados.write(row, 2, int(dictionary[i][0]))
+            verificados.write(row, 3, int(dictionary[i][-1]) - int(dictionary[i][0]))
+            row += 1
+
+    NoReportados.write('A1','Factura')
+    NoReportados.write('B1','Monto')
+    row = 1
+    for i in dictionary.keys():
+        if dictionary[i][0] != "none":
+            pass
+        else:
+            NoReportados.write(row, 0, i)
+            NoReportados.write(row, 1, int(dictionary[i][1]))
+            row += 1
+
+    NoVerificados.write('A1','Factura')
+    NoVerificados.write('B1','Monto')
+    row = 1
+    for i in nodict:
+        NoVerificados.write(row, 0, i[-3])
+        NoVerificados.write(row, 1, int(i[-1]))
+        row += 1
+
+    workbook.close()
+        
+        
+        
