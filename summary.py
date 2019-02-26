@@ -107,12 +107,19 @@ if __name__ == '__main__':
     NoVerificados = workbook.add_worksheet('NoVerificados')
     dictionary, nodict = pEx.files_diff(list0, list1)
     for i in dictionary.keys():
+        if dictionary[i][-1]=='': dictionary[i][-1]=0
+        if dictionary[i][0]=='': dictionary[i][0]=0
+        if dictionary[i][1]=='': dictionary[i][1]=0
+
         if dictionary[i][0] != "none":
             print "facturas: {} >> verificado :{} - reportado: {} = diferencia: {}".format(i, int(dictionary[i][-1]), int(dictionary[i][0]), int(dictionary[i][-1]) - int(dictionary[i][0]))
         else:
             print "factura no reportada: {}  con monto: {}".format(i, int(dictionary[i][1]))
     print "---------------------"
     for i in nodict:
+        if i[-3]=='': i[-3]=0
+        if i[-1]=='': i[-1]=0
+
         print "No tienen anotaciones de verificacion: {} -  con monto: {}".format(i[-3], int(i[-1]))
     
     verificados.write('A1','Factura')
